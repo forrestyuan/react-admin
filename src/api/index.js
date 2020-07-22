@@ -36,7 +36,7 @@ export const baiduWeather = (location)=>{
  * 获取一级/二级分类的列表
  * @param {String} parentId 一级分类id
  */
-export const reqCategory = (parentId)=>ajax('/manage/category/list',{parentId});
+export const reqCategories = (parentId)=>ajax('/manage/category/list',{parentId});
 /**
  * 添加二级分类
  * @param {String} categoryName 分类名称
@@ -52,6 +52,11 @@ export const reqAddCategory = (categoryName,parentId)=>ajax('/manage/category/ad
 export const reqUpdateCategory = (categoryName,categoryId)=>ajax('/manage/category/update',{categoryName,categoryId},"POST");
 
 /**
+ * 获取分类id对应的分类名称
+ * @param {String} categoryId 分类id
+ */
+export const reqCategory=(categoryId)=>ajax('/manage/category/info',{categoryId});
+/**
  * 获取商品分页列表
  * @param {Number} pageNum 页码
  * @param {Number} pageSize 每页数据的条数
@@ -65,3 +70,9 @@ export const reqProducts =(pageNum,pageSize)=> ajax('/manage/product/list',{page
  * @param {String} searchType 搜索类型
  */
 export const reqSearchProducts =(pageNum,pageSize, searchName,searchType)=> ajax('/manage/product/search',{pageNum, pageSize,[searchType]:searchName})
+/**
+ * 更新产品状态
+ * @param {String} productId 产品id
+ * @param {Number} status 产品状态 1:online 2:offline
+ */
+export const reqUpdateProductStatus =(productId,status)=> ajax('/manage/product/updateStatus',{productId, status},'POST')

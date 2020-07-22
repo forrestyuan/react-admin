@@ -4,7 +4,7 @@ import {PlusOutlined,ArrowRightOutlined} from "@ant-design/icons"
 import LinkButton from '../../components/link-button'
 import AddForm from './add-form'
 import UpdateForm from './update-form'
-import {reqCategory,reqUpdateCategory,reqAddCategory} from '../../api'
+import {reqCategories,reqUpdateCategory,reqAddCategory} from '../../api'
 
 class Category extends Component {
   constructor(props) {
@@ -72,7 +72,7 @@ class Category extends Component {
   //获取一级分类列表
   getCategory = async()=>{
     this.setState({loading:true})
-    let res = await reqCategory(this.state.parentId);
+    let res = await reqCategories(this.state.parentId);
     this.setState({loading:false})
     if(res.status === 0){
       //取出分类数组（可能是一级也可能是二级分类）

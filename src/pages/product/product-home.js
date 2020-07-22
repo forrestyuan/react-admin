@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {Card, Button,Select, Input,Table,Tag,message} from 'antd';
 import {SearchOutlined,PlusOutlined} from '@ant-design/icons'
 import LinkButton from '../../components/link-button'
-import {reqProducts,reqSearchProducts} from '../../api'
+import {reqProducts,reqSearchProducts,reqUpdateProductStatus} from '../../api'
 
 const {Option} = Select;
 const {Search} = Input;
@@ -17,19 +17,28 @@ class ProductHome extends Component {
           name:"手机手机",
           desc:"这是一部好手机",
           price:"2500",
-          status:"1"
+          status:"1",
+          imgs:["logo.png"],
+          detail:`<h1 style="color:red">商品详情描述在这里</h1>`,
+          pCategoryId:"5f16bc8d3fa06a2b9c3261e1",
+          categoryId:"5f16be7a3fa06a2b9c3261e2"
         },
         {
           name:"手机手机",
           desc:"这是一部好手机",
           price:"2500",
-          status:"2"
+          status:"2",
+          imgs:["logo.png"],
+          detail:`<h1 style="color:red">商品详情描述在这里</h1>`,
+          pCategoryId:"5f16bc8d3fa06a2b9c3261e1",
+          categoryId:"5f16be7a3fa06a2b9c3261e2"
         }
       ],
       searchType:"productName"
     }
     this.columns = [];//列定义数组
     this.pageSize = 1;
+    this.pageNum = 1;
   }
   //初始化表格列的定义
   initCloumns=()=>{
@@ -52,12 +61,12 @@ class ProductHome extends Component {
       {
         width:100,
         title: '状态',
-        dataIndex: 'status',
-        render:(status)=>{
+        render:(product)=>{
+          const {status,_id} = product;
           let online = status === "1"? true : false;
           return(
             <span>
-              <Button type="primary" size="small" >{online ? "下架":"上线"}</Button>
+              <Button type="primary" size="small" onClick={()=>{this.updateProductStatus(_id,online? 2 : 1)}}>{online ? "下架":"上线"}</Button>
               <Tag color={online ? "green" : "red"} style={{marginTop:5}}>{online?"在售中":"已下架"}</Tag>
             </span>
           )
@@ -66,16 +75,24 @@ class ProductHome extends Component {
       {
         width:100,
         title: '操作',
-        render:()=>{
+        render:(product)=>{
           return(
             <span>
-              <LinkButton>详情</LinkButton>
+              <LinkButton onClick={()=>{this.props.history.push("/product/detail",{product})}}>详情</LinkButton>
               <LinkButton>修改</LinkButton>
             </span>
           )
         }
       }
     ]
+  }
+  //更新产品状态
+  updateProductStatus=async(id,status)=>{
+    const res = await reqUpdateProductStatus(id,status);
+    if(res.status === 0){
+      message.success("更新商品状态成功")
+      this.getProduct(this.pageNum);
+    }
   }
   //搜索商品
   searchProduct=async(searchKeyword)=>{
@@ -87,6 +104,7 @@ class ProductHome extends Component {
   }
   //获取指定页码的列表数据
   getProduct = async(pageNum,searchName=void 0)=>{
+    this.pageNum = pageNum; // 保存pageNum 让其他方法可以看到
     this.setState({loading:true});
     let res;
     if(searchName){
