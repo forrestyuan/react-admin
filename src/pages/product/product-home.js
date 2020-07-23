@@ -12,32 +12,11 @@ class ProductHome extends Component {
     this.state = {  
       loading:false,
       total:0,
-      products:[
-        {
-          name:"手机手机",
-          desc:"这是一部好手机",
-          price:"2500",
-          status:"1",
-          imgs:["logo.png"],
-          detail:`<h1 style="color:red">商品详情描述在这里</h1>`,
-          pCategoryId:"5f16bc8d3fa06a2b9c3261e1",
-          categoryId:"5f16be7a3fa06a2b9c3261e2"
-        },
-        {
-          name:"手机手机",
-          desc:"这是一部好手机",
-          price:"2500",
-          status:"2",
-          imgs:["logo.png"],
-          detail:`<h1 style="color:red">商品详情描述在这里</h1>`,
-          pCategoryId:"5f16bc8d3fa06a2b9c3261e1",
-          categoryId:"5f16be7a3fa06a2b9c3261e2"
-        }
-      ],
+      products:[],
       searchType:"productName"
     }
     this.columns = [];//列定义数组
-    this.pageSize = 1;
+    this.pageSize = 3;
     this.pageNum = 1;
   }
   //初始化表格列的定义
@@ -63,7 +42,7 @@ class ProductHome extends Component {
         title: '状态',
         render:(product)=>{
           const {status,_id} = product;
-          let online = status === "1"? true : false;
+          let online = status === 1? true : false;
           return(
             <span>
               <Button type="primary" size="small" onClick={()=>{this.updateProductStatus(_id,online? 2 : 1)}}>{online ? "下架":"上线"}</Button>
@@ -79,7 +58,7 @@ class ProductHome extends Component {
           return(
             <span>
               <LinkButton onClick={()=>{this.props.history.push("/product/detail",{product})}}>详情</LinkButton>
-              <LinkButton>修改</LinkButton>
+              <LinkButton onClick ={()=>{this.props.history.push("/product/add",product)}}>修改</LinkButton>
             </span>
           )
         }
@@ -97,7 +76,7 @@ class ProductHome extends Component {
   //搜索商品
   searchProduct=async(searchKeyword)=>{
     if(searchKeyword && /\S/img.test(searchKeyword)){
-      this.getProduct(0, searchKeyword)
+      this.getProduct(1, searchKeyword)
     }else{
       message.warn("请输入搜索关键词")
     }
@@ -115,8 +94,6 @@ class ProductHome extends Component {
        res = await reqProducts(pageNum,this.pageSize);
     }
     this.setState({loading:false});
-    //无数据，暂时return
-    return;
     if(res.status === 0){
       const {total, list} = res.data;
       this.setState({
@@ -127,6 +104,9 @@ class ProductHome extends Component {
   
   componentWillMount(){
     this.initCloumns();
+  }
+  componentDidMount() {
+    this.getProduct(1)
   }
 
   render() { 
@@ -150,7 +130,7 @@ class ProductHome extends Component {
       </span>
     );
     const extra=(
-      <Button type="primary" icon={<PlusOutlined/>}>添加商品</Button>
+      <Button type="primary" icon={<PlusOutlined/>} onClick={()=>{this.props.history.push("/product/add")}}>添加商品</Button>
     )
     
     return ( 

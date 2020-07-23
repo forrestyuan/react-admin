@@ -76,3 +76,11 @@ export const reqSearchProducts =(pageNum,pageSize, searchName,searchType)=> ajax
  * @param {Number} status 产品状态 1:online 2:offline
  */
 export const reqUpdateProductStatus =(productId,status)=> ajax('/manage/product/updateStatus',{productId, status},'POST')
+
+/**
+ * 删除图片操作 
+ * @param {String} name 删除图片名称
+ */
+export const reqDeleteImg = (name)=>ajax('/manage/img/delete',{name},"POST")
+
+export const reqAddOrUpdateProduct = (product)=>ajax(`/manage/product/${product._id?'update':'add'}`,product,"POST")

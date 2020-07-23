@@ -57,11 +57,7 @@ class ProductDetail extends Component {
             <span className="product-detail-tit">商品图片:</span>
             <span className="product-detail-img">
               {
-                imgs.map(item=>{
-                  return (
-                    <img key={item} src={BASE_IMG_URL+item} alt="product-image" />
-                  )
-                })
+                imgs.map(item=><img key={item} src={BASE_IMG_URL+item} alt="product" />)
               }
             </span>
           </Item>
