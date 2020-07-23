@@ -29,10 +29,10 @@ yarn emit
 ```
 
 ## 2. 运行截图
-![login](./demo_screenshot/login.JPG)
-![product](./demo_screenshot/product.JPG)
-![goods](./demo_screenshot/goods.JPG)
-![add_goods](./demo_screenshot/add_goods.JPG)
+![login](https://raw.githubusercontent.com/forrestyuan/react-admin/master/demo_screenshot/login.JPG)
+![product](https://raw.githubusercontent.com/forrestyuan/react-admin/master/demo_screenshot/product.JPG)
+![goods](https://raw.githubusercontent.com/forrestyuan/react-admin/master/demo_screenshot/goods.JPG)
+![add_goods](https://raw.githubusercontent.com/forrestyuan/react-admin/master/demo_screenshot/add_goods.JPG)
 
 ## 3. 项目状态
 **还在完善中....🤷‍♀️🤷‍♂️**
