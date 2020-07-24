@@ -12,7 +12,7 @@ export const reqLogin=(username, password)=>ajax("/login",{username,password},"P
  * 添加用户
  * @param {Object} user 用户信息对象
  */
-export const reqAddUser = (user)=>ajax("/manage/user/add",user,"POST");
+export const reqAddOrUpdateUser = (user)=>ajax(`/manage/user/${user._id?'update':'add'}`,user,"POST");
 
 /**
  * 获取城市天气
@@ -23,7 +23,6 @@ export const baiduWeather = (location)=>{
     let url = `http://api.map.baidu.com/telematics/v3/weather?location=${location}&output=json&ak=${baidu_ak}`;
     jsonp(url,{},(err, data)=>{
       if(!err && data.status ==="success"){
-        console.log(data)
         const {dayPictureUrl,weather}= data.results[0].weather_data[0]
         resolve({dayPictureUrl, weather})
       }else{
@@ -82,5 +81,31 @@ export const reqUpdateProductStatus =(productId,status)=> ajax('/manage/product/
  * @param {String} name 删除图片名称
  */
 export const reqDeleteImg = (name)=>ajax('/manage/img/delete',{name},"POST")
-
+/**
+ * 添加或者更新产品
+ * @param {Object} product 产品对象
+ */
 export const reqAddOrUpdateProduct = (product)=>ajax(`/manage/product/${product._id?'update':'add'}`,product,"POST")
+/**
+ * 请求角色列表
+ */
+export const reqRoleList = ()=> ajax('/manage/role/list')
+/**
+ * 添加角色
+ * @param {String} roleName 角色名称
+ */
+export const reqAddRole = (roleName)=> ajax('/manage/role/add',{roleName},"POST")
+/**
+ * 更新角色包含的权限
+ * @param {Object} role 角色对象
+ */
+export const reqUpdateRole = (role)=> ajax('/manage/role/update',role,"POST")
+/**
+ * 获取用户列表
+ */
+export const reqUsers = ()=>ajax("/manage/user/list");
+/**
+ * 删除用户
+ * @param {String} userId 用户ID
+ */
+export const reqDeleteUser = (userId)=>ajax("/manage/user/delete",{userId},"POST");

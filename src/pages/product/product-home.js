@@ -75,11 +75,7 @@ class ProductHome extends Component {
   }
   //搜索商品
   searchProduct=async(searchKeyword)=>{
-    if(searchKeyword && /\S/img.test(searchKeyword)){
-      this.getProduct(1, searchKeyword)
-    }else{
-      message.warn("请输入搜索关键词")
-    }
+    this.getProduct(1, searchKeyword)
   }
   //获取指定页码的列表数据
   getProduct = async(pageNum,searchName=void 0)=>{
@@ -87,10 +83,8 @@ class ProductHome extends Component {
     this.setState({loading:true});
     let res;
     if(searchName){
-        message.info("关键词搜索")
-        res = await reqSearchProducts(pageNum,this.pageSize,searchName,this.state.searchType);
+      res = await reqSearchProducts(pageNum,this.pageSize,searchName,this.state.searchType);
       }else{
-        message.info("分页查询")
        res = await reqProducts(pageNum,this.pageSize);
     }
     this.setState({loading:false});
@@ -142,6 +136,7 @@ class ProductHome extends Component {
           dataSource={products} 
           columns={this.columns} 
           pagination={{
+            current:this.pageNum,
             defaultPageSize:this.pageSize, 
             showQuickJumper:true,total,
             onChange:(pageNum)=>{this.getProduct(pageNum)}

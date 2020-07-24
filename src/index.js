@@ -8,7 +8,6 @@ import memoryUtils from "./utils/memoryUtils"
 //读取 local中保存user，保存到内存中
 const user = storage.getUser();
 memoryUtils.user = user;
-console.log("index.js",memoryUtils.user)
 ReactDOM.render(
   <React.StrictMode>
     <App />

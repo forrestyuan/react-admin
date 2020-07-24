@@ -4,6 +4,7 @@ import './index.less'
 import Logo from '../../assets/logo.png'
 import { Menu, Layout} from 'antd';
 import menuList from '../../config/menuConfig'
+import memoryUtils from '../../utils/memoryUtils'
 
 const { SubMenu } = Menu;
 const {Sider} = Layout;
@@ -19,21 +20,35 @@ class LeftNav extends Component {
   };
   getMenuList=(menuList)=>{
     return menuList.map((val)=>{
-      if(val.children.length){
-        return(
-          <SubMenu key={val.path} icon={val.icon} title={val.title}>
-            {this.getMenuList(val.children)}
-          </SubMenu>
-        )
-      }else{
-        return (
-          <Menu.Item key={val.path} icon={val.icon}>
-            <Link to={val.path}>{val.title}</Link>
-          </Menu.Item>
-        )
+      if(this.hasAuth(val)){
+        if(val.children.length){
+          return(
+            <SubMenu key={val.path} icon={val.icon} title={val.title}>
+              {this.getMenuList(val.children)}
+            </SubMenu>
+          )
+        }else{
+          return (
+            <Menu.Item key={val.path} icon={val.icon}>
+              <Link to={val.path}>{val.title}</Link>
+            </Menu.Item>
+          )
+        }
       }
     })
   }
+  //判断当前登录用户对item是否有权限
+  hasAuth=(item)=>{
+    const {key,isPublic} = item
+    const menus = memoryUtils.user.role.menus;
+    if(isPublic || menus.includes(key)){
+      return true;
+    }else if(item.children){
+      return !!item.children.find(child => menus.includes(child.key))
+    }
+    return false;
+  }
+  //
   getMenuOpenKey=(menuList, path)=>{
     for(let val of menuList){
       if(val.children.length){
@@ -59,7 +74,6 @@ class LeftNav extends Component {
           defaultOpenKeys={[openKey]}
           mode="inline"
           theme="dark"
-          inlineCollapsed={this.state.collapsed}
         >
           {this.getMenuList(menuList)}
         </Menu>
