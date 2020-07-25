@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import {Link, withRouter} from 'react-router-dom'
+import {connect} from 'react-redux'
+import {setHeadTitle} from '../../redux/actions'
+
 import './index.less'
 import Logo from '../../assets/logo.png'
 import { Menu, Layout} from 'antd';
 import menuList from '../../config/menuConfig'
-import memoryUtils from '../../utils/memoryUtils'
 
 const { SubMenu } = Menu;
 const {Sider} = Layout;
@@ -15,9 +17,9 @@ class LeftNav extends Component {
       collapsed:false
     }
   }
-  onCollapse = collapsed => {
-    this.setState({ collapsed });
-  };
+
+  onCollapse = collapsed => this.setState({ collapsed });
+
   getMenuList=(menuList)=>{
     return menuList.map((val)=>{
       if(this.hasAuth(val)){
@@ -28,9 +30,12 @@ class LeftNav extends Component {
             </SubMenu>
           )
         }else{
+          if(this.pathname === val.path){
+            this.props.setHeadTitle(val.title);
+          }
           return (
             <Menu.Item key={val.path} icon={val.icon}>
-              <Link to={val.path}>{val.title}</Link>
+              <Link to={val.path} onClick={()=>this.props.setHeadTitle(val.title)}>{val.title}</Link>
             </Menu.Item>
           )
         }
@@ -39,8 +44,9 @@ class LeftNav extends Component {
   }
   //判断当前登录用户对item是否有权限
   hasAuth=(item)=>{
+    const {user} = this.props;
     const {key,isPublic} = item
-    const menus = memoryUtils.user.role.menus;
+    const menus = user.role.menus;
     if(isPublic || menus.includes(key)){
       return true;
     }else if(item.children){
@@ -53,13 +59,15 @@ class LeftNav extends Component {
     for(let val of menuList){
       if(val.children.length){
         for(let item of val.children){
-          if(path.includes(item.path)) return val.path;
+          if(item.path.includes(path)) return val.path;
         }
       }
     }
   }
   render() { 
-    let path = `/${this.props.location.pathname.split("/")[1]}`;
+    this.pathname =this.props.location.pathname;
+
+    const path = `/${this.pathname.split("/")[1]}`;
     let openKey = this.getMenuOpenKey(menuList,path);
     return (  
       <Sider className="left-sider" collapsible  collapsed={this.state.collapsed} onCollapse={this.onCollapse}>
@@ -70,7 +78,7 @@ class LeftNav extends Component {
           </header>
         </Link>
         <Menu
-          selectedKeys={[path]}
+          selectedKeys={[this.pathname]}
           defaultOpenKeys={[openKey]}
           mode="inline"
           theme="dark"
@@ -85,4 +93,7 @@ class LeftNav extends Component {
   * withRoute高阶组件
   * 包装非路由组件，向传递的组件传递三个参数，history，location、match
   */
-export default withRouter(LeftNav);
+export default connect(
+  state=>({user:state.user}),
+  {setHeadTitle}
+)(withRouter(LeftNav));

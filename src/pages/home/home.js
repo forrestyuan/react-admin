@@ -8,7 +8,7 @@ class Home extends Component {
   render() { 
     return ( 
       <div className="home">
-        HOME
+        欢迎使用FFF后台，首内容，后续更新
       </div>
      );
   }

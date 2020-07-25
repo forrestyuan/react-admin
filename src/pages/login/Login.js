@@ -1,41 +1,34 @@
 import React, { Component } from 'react';
 import { Form, Input, Button, Checkbox,message } from 'antd';
+import {connect} from 'react-redux';
+import{login} from '../../redux/actions'
+
 import {Redirect} from 'react-router-dom'
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import './login.less'
 import logo from '../../assets/logo.png'
-import {reqLogin} from "../../api"
-import memoryUtils from '../../utils/memoryUtils'
-import storage from '../../utils/storage'
 /* 
   登录的路由组件
 */
 class Login extends Component {
-  constructor(props) {
+  constructor(props){
     super(props);
-    this.state = { 
-    }
+    this.state={}
   }
   onFinish = async(values) => {
-    try {
       let{username,password} = values;
-      let res = await reqLogin(username, password);
-      if(res.status === 0){
-        message.success("登录成功！");
-        memoryUtils.user = res.data;
-        storage.saveUser(res.data);
-        this.props.history.replace("/");
-      }else{
-        message.error("登录失败，"+ res.msg)
-      }
-    } catch (err) {
-      console.log("请求失败",err);
-    }
+      this.props.login(username,password);
   }
+
   render() { 
-    if(memoryUtils.user && memoryUtils.user._id){
-      return <Redirect to="/"></Redirect>
+    const user = this.props.user;
+    if(user && user._id){
+      return <Redirect to="/home"></Redirect>
     }
+    if(user.msg){
+      message.error(user.msg)
+    }
+
     return (  
       <div className="login">
         <header className="login-header">
@@ -63,9 +56,7 @@ class Login extends Component {
             </Form.Item>
             <Form.Item
               name="password"
-              rules={[
-                { required: true, message: '请输入密码' },
-              ]}
+              rules={[{ required: true, message: '请输入密码' },]}
             >
               <Input prefix={<LockOutlined/>} type="password" placeholder="Password"/>
             </Form.Item>
@@ -73,7 +64,6 @@ class Login extends Component {
               <Form.Item name="remember" valuePropName="checked" noStyle>
                 <Checkbox>Remember me</Checkbox>
               </Form.Item>
-              {/* <a className="login-form-forgot" href="">Forgot password</a> */}
             </Form.Item>
 
             <Form.Item>
@@ -86,4 +76,7 @@ class Login extends Component {
   }
 }
  
-export default Login;
+export default connect(
+  state => ({user:state.user}),
+  {login}
+)(Login);

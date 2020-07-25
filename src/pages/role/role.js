@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import {Card,Button,Table,Modal,message} from 'antd';
+import {connect} from 'react-redux'
+import {logout} from '../../redux/actions'
+
 import dayjs from 'dayjs'
 import AddForm from './add-form'
 import AuthForm from './auth-form'
-import memoryUtils from '../../utils/memoryUtils'
 import {reqRoleList,reqAddRole,reqUpdateRole} from '../../api'
-import storage from '../../utils/storage'
 
 const authFormRef = React.createRef();
 class Role extends Component {
@@ -85,19 +86,18 @@ class Role extends Component {
   }
 
   handleUpdateRole= async ()=>{
+    const {user} = this.props;
     const role = this.state.role;
     const menus = authFormRef.current.getMenus();
     role.menus = menus;
     role.auth_time = Date.now();
-    role.auth_name=memoryUtils.user.username;
+    role.auth_name=user.username;
     const res = await reqUpdateRole(role);
     this.setState({isShowAuth:false})
     if(res.status === 0){
-      if(role._id === memoryUtils.user.role_id){
+      if(role._id ===user.role_id){
         message.success("当前用户权限已更新，请重新登录")
-        memoryUtils.user = {};
-        storage.removeUser();
-        this.props.history.replace("/login");
+        this.props.logout();
       }else{
         message.success("更新角色权限成功")
         this.getRoleList();
@@ -159,4 +159,7 @@ class Role extends Component {
   }
 }
  
-export default Role;
+export default connect(
+  state=>({user:state.user}),
+  {logout}
+)(Role);

@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import {Breadcrumb, Modal} from 'antd'
 import {withRouter} from 'react-router-dom'
-import menuList from '../../config/menuConfig'
+import {connect} from 'react-redux'
+import {logout} from '../../redux/actions'
+
 import './index.less'
 import {baiduWeather} from "../../api"
-import memoryUtils from '../../utils/memoryUtils'
-import store from '../../utils/storage'
 import dayjs from 'dayjs'
 import LinkButton from "../../components/link-button"
+
 
 class Header extends Component {
   constructor(props) {
@@ -24,50 +25,40 @@ class Header extends Component {
       this.setState({currentTime:dayjs().format('YYYY-MM-DD HH:mm:ss')});
     }, 1000);
   }
+
   componentWillUnmount(){
     clearInterval(this.intervalId);
   }
-  getTitle=()=>{
-    const path = `/${this.props.location.pathname.split("/")[1]}`;
-    for(let val of menuList){
-      if(val.children.length){
-        for(let item of val.children){
-          if(item.path === path) return item.title;
-        }
-      }else{
-        if(val.path === path) return val.title;
-      }
-    }
-  }
+
   logout=()=>{
     Modal.confirm({
       title:"确定退出吗？",
       content:"清除登录状态",
-      onOk:()=>{
-        store.removeUser();
-        memoryUtils.user = {};
-        this.props.history.replace("/login")
+      onOk:()=> {
+        this.props.logout();
       }
     })
   }
-  render() { 
+  render() {
+    const {headTitle,user} = this.props;
+    const {currentTime,weather_data} = this.state;
     return ( 
       <div className="header">
         <div className="header-top">
-          <span>欢迎,{memoryUtils.user.username}</span>
+          <span>欢迎,{user.username}</span>
           <LinkButton onClick={this.logout}>登出</LinkButton>
-          {/* <span><a href="javascript:void(0)" onClick={this.logout}>登出</a></span> */}
         </div>
         <div className="header-bottom">
           <div className="header-bottom-left">
             <Breadcrumb>
-              <Breadcrumb.Item>{this.getTitle()}</Breadcrumb.Item>
+              <Breadcrumb.Item>FFF后台</Breadcrumb.Item>
+              <Breadcrumb.Item>{headTitle}</Breadcrumb.Item>
             </Breadcrumb>
           </div>
           <div className="header-bottom-right">
-            <span style={{marginRight:10}}>{this.state.currentTime}</span>
-            <img src={this.state.weather_data.dayPictureUrl} alt="weather" />
-            <span>{this.state.weather_data.weather}</span>
+            <span style={{marginRight:10}}>{currentTime}</span>
+            <img src={weather_data.dayPictureUrl} alt="weather" />
+            <span>{weather_data.weather}</span>
           </div>
         </div>
       </div>
@@ -75,4 +66,7 @@ class Header extends Component {
   }
 }
  
-export default withRouter(Header);
+export default connect(
+  state=>({headTitle:state.headTitle,user:state.user}),
+  {logout}
+)(withRouter(Header));
